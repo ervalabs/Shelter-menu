@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seeding Firebase...</title>
+</head>
+<body style="background: black; color: white; font-family: sans-serif; padding: 2rem;">
+    <h1>Subiendo productos a Firebase...</h1>
+    <p id="status">Por favor, esperá...</p>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_42fCrT7k3e3_0XcB2QrYejYJMVztqjo",
+            authDomain: "shelter-menu.firebaseapp.com",
+            projectId: "shelter-menu",
+            storageBucket: "shelter-menu.firebasestorage.app",
+            messagingSenderId: "645160363953",
+            appId: "1:645160363953:web:63b4d25b6128b5badb3f90"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const products = [
+            { order: 1, name: "Tequeños (8 u.)", desc: "Palitos de masa crujiente rellenos de queso fundido que se estira con cada mordida. Tu excusa perfecta para compartir... o no.", price: 10000, cat: "entradas", active: true, img: "" },
+            { order: 2, name: "Nachos Cargados", desc: "Montaña de nachos crujientes sepultados bajo cheddar fundido, guacamole fresco, crema ácida y jalapeños picantes. Para atacar en grupo.", price: 11000, cat: "entradas", active: true, img: "" },
+            { order: 3, name: "Empanadas Salteñas", desc: "Jugosas, bien condimentadas, con el repulgue del norte. Masa dorada que cruje al primer bocado.", price: 2500, cat: "entradas", active: true, img: "" },
+            { order: 4, name: "Empanadas J&Q", desc: "Jamón y queso derretido envueltos en masa crocante. Simples, honestas, adictivas.", price: 2500, cat: "entradas", active: true, img: "" },
+
+            { order: 1, name: "PROVO SMASH", desc: "Doble medallón smash con costra perfecta, queso provolone derretido que se funde en cada capa, panceta ahumada crocante, cebolla caramelizada lenta en su propio jugo y nuestra salsa Shelter secreta. Todo en un pan brioche dorado y tostado en manteca.", price: 19000, cat: "burgas", active: true, img: "img/shelter_bardeburgas_3744043978753952651.jpg", isStar: true },
+            { order: 2, name: "Sweet Onion", desc: "Doble medallón smash con costra dorada, queso cheddar fundido cayendo por los bordes, montaña de cebolla caramelizada dulce y ahumada, lechuga fresca y nuestra mayo especial de la casa. Dulce, salada, adictiva.", price: 18000, cat: "burgas", active: true, img: "img/hero-burger.png", isStar: false },
+            { order: 3, name: "Crunchy", desc: "Doble medallón smash con costra crujiente, queso cheddar bien derretido, cebolla crispy en tiras que explota en textura, panceta ahumada crocante y salsa barbacoa ahumada. Cada bocado cruje.", price: 18000, cat: "burgas", active: true, img: "img/burger-closeup.jpg", isStar: false },
+            { order: 4, name: "Classic", desc: "Doble medallón smash sellado a fuego, queso cheddar americano fundido, tomate en rodajas, lechuga crocante, cebolla fresca en aros y ketchup & mostaza. La de siempre, pero hecha como tiene que ser.", price: 18000, cat: "burgas", active: true, img: "img/customer-experience.jpg", isStar: false },
+            { order: 5, name: "Shelter", desc: "Doble medallón smash con costra bien marcada, queso cheddar fundido, panceta ahumada, pepinos encurtidos en casa, lechuga fresca y la auténtica salsa Shelter: nuestra firma en cada bocado.", price: 18000, cat: "burgas", active: true, img: "img/hero-burger.png", isStar: false },
+
+            { order: 1, name: "+ Papas Solas", desc: "", price: 6000, cat: "combos", active: true, img: "" },
+            { order: 2, name: "+ Papas Cheddar", desc: "", price: 7000, cat: "combos", active: true, img: "" },
+            { order: 3, name: "+ Papas Completas", desc: "", price: 9000, cat: "combos", active: true, img: "" },
+            { order: 4, name: "+ Gaseosa", desc: "", price: 2000, cat: "combos", active: true, img: "" },
+            { order: 5, name: "+ Cerveza Artesanal", desc: "", price: 6000, cat: "combos", active: true, img: "" },
+
+            { order: 1, name: "Papas Solas", desc: "Bastones gruesos de papa, fritas hasta quedar doradas y crujientes por fuera, cremosas por dentro. Con sal gruesa y listo.", price: 8000, cat: "papas", active: true, img: "" },
+            { order: 2, name: "Papas Cheddar", desc: "Las mismas papas de siempre, pero ahogadas en una cascada de cheddar fundido caliente. No necesitás más explicación.", price: 9000, cat: "papas", active: true, img: "" },
+            { order: 3, name: "Papas Completas", desc: "La versión sin límites: papas crocantes bañadas en cheddar fundido, lluvia de panceta ahumada crocante, cebollita de verdeo y nuestra mayo especial.", price: 12000, cat: "papas", active: true, img: "" },
+
+            { order: 1, name: "Muzzarella", desc: "Base crocante, salsa de tomate casera y una capa generosa de muzzarella dorada y burbujeante. La clásica que no falla.", price: 7500, cat: "pizzas", active: true, img: "" },
+            { order: 2, name: "Napolitana", desc: "Rodajas gruesas de tomate fresco, orégano aromático y muzzarella gratinada. Simpleza que enamora.", price: 8000, cat: "pizzas", active: true, img: "" },
+            { order: 3, name: "Panceta & Verdeo", desc: "Muzzarella fundida, panceta ahumada crocante desmenuzada y cebolla de verdeo fresca. Rústica y con carácter.", price: 9000, cat: "pizzas", active: true, img: "" },
+
+            { order: 1, name: "IPA Americana", desc: "Amarga, cítrica, intensa", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 2, name: "NEIPA", desc: "Turbia, jugosa, tropical", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 3, name: "APA", desc: "Lupulada y equilibrada", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 4, name: "Session IPA", desc: "Ligera pero con garra", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 5, name: "Dorada Pampeana", desc: "Suave, dorada, refrescante", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 6, name: "Cream Ale", desc: "Sedosa, cremosa, fácil", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 7, name: "Honey", desc: "Toque dulce de miel", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 8, name: "Amber Ale", desc: "Caramelo y tostada", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 9, name: "Scottish", desc: "Malta y caramelo profundo", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 10, name: "Dubbel", desc: "Belga, frutal, con cuerpo", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 11, name: "Porter", desc: "Chocolate y café", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 12, name: "Imperial Stout", desc: "Negra, densa, potente", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 13, name: "Sour", desc: "Ácida, refrescante, frutal", price: 8000, cat: "cervezas", active: true, img: "" },
+            { order: 14, name: "Fruit Beer", desc: "Frutada y liviana", price: 8000, cat: "cervezas", active: true, img: "" },
+
+            { order: 1, name: "Gaseosa", desc: "", price: 3000, cat: "tragos", active: true, img: "" },
+            { order: 2, name: "Fernet con Coca", desc: "", price: 7000, cat: "tragos", active: true, img: "" },
+            { order: 3, name: "Campari Orange", desc: "", price: 7000, cat: "tragos", active: true, img: "" },
+            { order: 4, name: "Gin Tonic", desc: "", price: 8000, cat: "tragos", active: true, img: "" },
+            { order: 5, name: "Caipirinha", desc: "", price: 7000, cat: "tragos", active: true, img: "" }
+        ];
+
+        async function seedDB() {
+            try {
+                const colRef = collection(db, "products");
+                for (let p of products) {
+                    await addDoc(colRef, p);
+                    console.log("Subido:", p.name);
+                }
+                document.getElementById('status').innerText = "¡MIGRACIÓN COMPLETA! Se subieron todos los productos a Firestore. Ya podés cerrar esta ventana.";
+                document.getElementById('status').style.color = "#FF8C00";
+            } catch (e) {
+                document.getElementById('status').innerText = "ERROR: " + e.message;
+                document.getElementById('status').style.color = "red";
+                console.error(e);
+            }
+        }
+
+        seedDB();
+    </script>
+</body>
+</html>

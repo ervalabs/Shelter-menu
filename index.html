@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHELTER Burgers & Beers | Concordia, Entre Ríos</title>
+  <meta name="description" content="Smash burgers de verdad y cerveza artesanal en Concordia. Tu refugio gastronómico. Menú, ubicación y más.">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Caveat:wght@700&family=Fredoka:wght@700&family=Inter:wght@400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍔</text></svg>">
+
+  <meta property="og:title" content="SHELTER Burgers & Beers | Concordia, Entre Ríos">
+  <meta property="og:description" content="Smash burgers de verdad y cerveza artesanal en Concordia. Tu refugio gastronómico.">
+  <meta property="og:image" content="img/hero-burger.png">
+  <meta property="og:type" content="website">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header>
+    <nav class="navbar" id="navbar">
+      <div class="navbar-container">
+        <a href="#" class="logo">SHELTER</a>
+        <ul class="nav-links">
+          <li><a href="#entradas">Menú</a></li>
+          <li><a href="#about">Nosotros</a></li>
+          <li><a href="#barra">Cervezas</a></li>
+          <li><a href="#location">Ubicación</a></li>
+        </ul>
+        <a href="https://wa.me/" class="cta-button" target="_blank" rel="noopener">Pedí ahora</a>
+        <button class="hamburger" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="menu-overlay"></div>
+  <div class="mobile-menu">
+    <ul class="mobile-nav-links">
+      <li><a href="#entradas">Menú</a></li>
+      <li><a href="#about">Nosotros</a></li>
+      <li><a href="#barra">Cervezas</a></li>
+      <li><a href="#location">Ubicación</a></li>
+      <li><a href="https://wa.me/" class="mobile-cta" target="_blank" rel="noopener">Pedí ahora</a></li>
+    </ul>
+  </div>
+
+  <main>
+    <!-- ==================== HERO con VIDEO de fondo ==================== -->
+    <section class="hero" id="hero">
+      <!-- Video de fondo en loop -->
+      <div class="hero-video-wrapper">
+        <video class="hero-video" autoplay muted loop playsinline poster="img/hero-burger.png">
+          <source src="img/shelter_bardeburgas_3946406017848053729.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="hero-content fade-in">
+        <h1 class="hero-title">SHELTER</h1>
+        <h2 class="hero-subtitle">BURGERS & BEERS</h2>
+        <p class="hero-tagline">Smash burgers de verdad. Cerveza artesanal de acá. Tu refugio en Concordia.</p>
+        <div class="hero-ctas">
+          <a href="#burgas" class="btn btn-primary">Ver el Menú</a>
+          <a href="#location" class="btn btn-secondary">Cómo Llegar</a>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <a href="#entradas" aria-label="Deslizar abajo">↓</a>
+      </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <div class="trust-strip fade-in">
+      <span class="trust-item">4.8 en Google</span>
+      <span class="trust-item">· +500 reseñas</span>
+      <span class="trust-item">· @shelter.concordia</span>
+      <span class="trust-item">· Todos los días desde las 20hs</span>
+    </div>
+
+    <!-- ==================== ENTRADAS ==================== -->
+    <section class="section" id="entradas">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">🧀 PARA ARRANCAR LA NOCHE</h2>
+          <p class="section-subtitle">Porque la paciencia no es lo tuyo.</p>
+        </div>
+        <div class="grid grid-2" id="entradas-grid">
+          <!-- Entradas dinámicas desde Firebase -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== BURGAS ==================== -->
+    <section class="section" id="burgas">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">🔥 NUESTRAS BURGAS</h2>
+          <p class="section-subtitle">Doble smash. Queso fundido. Sin vueltas.</p>
+          <p class="intro-paragraph">Todas nuestras burgas llevan doble medallón smash con costra crujiente, en pan brioche artesanal tostado en plancha.</p>
+        </div>
+
+        <div id="burgas-container">
+          <!-- Burgas dinámicas desde Firebase (incluyendo Star Card) -->
+        </div>
+
+        <!-- Combo Module (Upsell) -->
+        <div class="combo-module fade-in">
+          <h4 class="combo-title">HACELO COMBO</h4>
+          <p class="combo-subtitle">Sumale el match perfecto a tu burga.</p>
+          <div class="combo-items" id="combos-grid">
+            <!-- Combos dinámicos -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAPAS ==================== -->
+    <section class="section" id="papas">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">🍟 PAPAS</h2>
+          <p class="section-subtitle">Nadie dijo que no a unas papas.</p>
+        </div>
+        <div class="grid grid-1" id="papas-grid">
+          <!-- Papas dinámicas -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PIZZAS ==================== -->
+    <section class="section" id="pizzas">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">🍕 PIZZAS INDIVIDUALES</h2>
+          <p class="section-subtitle">Porque a veces querés algo distinto.</p>
+        </div>
+        <div class="grid grid-1" id="pizzas-grid">
+          <!-- Pizzas dinámicas -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== GALERÍA (fotos del lugar) ==================== -->
+    <section class="section gallery-section" id="galeria">
+      <div class="container">
+        <div class="gallery-grid fade-in">
+          <div class="gallery-item">
+            <img src="img/shelter_bardeburgas_3902203740734799277.jpg" alt="Disfrutando una burger en Shelter" loading="lazy">
+          </div>
+          <div class="gallery-item">
+            <img src="img/shelter_bardeburgas_3891337645188381850.jpg" alt="Amigas brindando en la barra de Shelter" loading="lazy">
+          </div>
+          <div class="gallery-item">
+            <img src="img/shelter_bardeburgas_3902203750605346916.jpg" alt="Cervezas artesanales en Shelter" loading="lazy">
+          </div>
+          <div class="gallery-item">
+            <img src="img/drinks-ambiance.png" alt="Gin tonic en Shelter" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== LA BARRA con VIDEO de fondo ==================== -->
+    <section class="barra section" id="barra">
+      <!-- Video de fondo en loop -->
+      <div class="barra-video-wrapper">
+        <video class="barra-video" autoplay muted loop playsinline poster="img/drinks-ambiance.png">
+          <source src="img/shelter_bardeburgas_3955823643512416959.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">🍺 LA BARRA</h2>
+          <p class="section-subtitle">Artesanal de verdad. De la zona y para vos.</p>
+        </div>
+
+        <!-- Happy Hour Banner -->
+        <div class="happy-hour fade-in">
+          <div class="happy-hour-content">
+            <div>
+              <strong>HAPPY HOUR — Todos los días hasta las 20hs</strong>
+              <p>Todas las artesanales a <strong>$8000</strong></p>
+            </div>
+          </div>
+          <span class="happy-hour-status"></span>
+        </div>
+
+        <!-- Beer Grid -->
+        <div class="beer-grid fade-in" id="cervezas-grid">
+          <!-- Cervezas dinámicas -->
+        </div>
+
+        <!-- Tragos -->
+        <div class="tragos fade-in">
+          <h3 class="tragos-title">TRAGOS</h3>
+          <div class="tragos-list" id="tragos-list">
+            <!-- Tragos dinámicos -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-grid fade-in">
+          <div class="about-image">
+            <img class="about-img" src="img/shelter_bardeburgas_3891337645188381850.jpg" alt="Amigas disfrutando en la barra de Shelter" loading="lazy">
+          </div>
+          <div class="about-text">
+            <h2 class="section-title">TU REFUGIO EN CONCORDIA</h2>
+            <p class="about-quote">"Creamos Shelter para que tengas un lugar donde la burger siempre es smash, la cerveza siempre es artesanal, y la música siempre está buena."</p>
+            <a href="#" class="about-cta">Seguinos en Instagram →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== UBICACIÓN ==================== -->
+    <section class="section" id="location">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">VENÍ A VISITARNOS</h2>
+        </div>
+        <div class="location-grid fade-in">
+          <div class="map-container">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3456.789!2d-58.0205!3d-31.3928!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDIzJzM0LjEiUyA1OMKwMDEnMTMuOCJX!5e0!3m2!1ses-419!2sar!4v1!5m2!1ses-419!2sar"
+              width="100%"
+              height="100%"
+              style="border:0; filter: invert(90%) hue-rotate(180deg);"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Mapa de ubicación de SHELTER">
+            </iframe>
+          </div>
+          <div class="location-info">
+            <p class="address">Urquiza 1095</p>
+            <p class="location-details">Concordia, Entre Ríos</p>
+            <p class="location-details">Todos los días desde las 20:00hs</p>
+            <div class="location-ctas">
+              <a href="https://wa.me/" class="btn btn-primary" target="_blank" rel="noopener">Mandanos un WhatsApp</a>
+              <a href="https://maps.google.com" class="btn btn-secondary" target="_blank" rel="noopener">Abrir en Google Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-logo">SHELTER</div>
+      <div class="footer-address">
+        <p>Urquiza 1095, Concordia, Entre Ríos</p>
+        <p>Todos los días desde las 20:00hs</p>
+      </div>
+      <div class="footer-copy">
+        <p>&copy; <span id="current-year">2026</span> Shelter Burgers & Beers</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky Mobile CTA -->
+  <div class="sticky-cta">
+    <a href="https://wa.me/" class="btn btn-primary" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="#burgas" class="btn btn-secondary">Ver Menú</a>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
