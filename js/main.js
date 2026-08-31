@@ -1,5 +1,3 @@
-'use strict';
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -16,11 +14,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 document.addEventListener('DOMContentLoaded', async () => {
+  'use strict';
 
   // ========================================
   // 1. Navbar Scroll Effect
   // ========================================
   const navbar = document.getElementById('navbar');
+  const scrollIndicator = document.querySelector('.scroll-indicator');
   let ticking = false;
 
   const onScroll = () => {
@@ -29,14 +29,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (navbar) {
           navbar.classList.toggle('scrolled', window.scrollY > 50);
         }
-
-        // 7. Scroll Indicator Hide
         if (scrollIndicator) {
           const hidden = window.scrollY > 200;
           scrollIndicator.style.opacity = hidden ? '0' : '1';
           scrollIndicator.style.pointerEvents = hidden ? 'none' : 'auto';
         }
-
         ticking = false;
       });
       ticking = true;
@@ -62,8 +59,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       const top = targetElement.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT;
       window.scrollTo({ top, behavior: 'smooth' });
-
-      // Close mobile menu if open
       closeMobileMenu();
     }
   });
@@ -74,7 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const hamburger = document.querySelector('.hamburger');
   const mobileMenu = document.querySelector('.mobile-menu');
   const menuOverlay = document.querySelector('.menu-overlay');
-  const scrollIndicator = document.querySelector('.scroll-indicator');
 
   const closeMobileMenu = () => {
     hamburger?.classList.remove('active');
@@ -87,20 +81,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     hamburger?.classList.toggle('active');
     mobileMenu?.classList.toggle('active');
     menuOverlay?.classList.toggle('active');
-    document.body.style.overflow =
-      mobileMenu?.classList.contains('active') ? 'hidden' : '';
+    document.body.style.overflow = mobileMenu?.classList.contains('active') ? 'hidden' : '';
   };
 
   hamburger?.addEventListener('click', toggleMobileMenu);
   menuOverlay?.addEventListener('click', closeMobileMenu);
 
   // ========================================
-  // 4. Scroll Reveal Animations
+  // 4. Scroll Reveal Animations Setup
   // ========================================
-  const fadeElements = document.querySelectorAll('.fade-in');
-
-  if (fadeElements.length > 0 && 'IntersectionObserver' in window) {
-    const revealObserver = new IntersectionObserver(
+  let revealObserver;
+  if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -111,11 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       { threshold: 0.1 }
     );
-
-    fadeElements.forEach((el) => revealObserver.observe(el));
-  } else {
-    // Fallback: just show everything
-    fadeElements.forEach((el) => el.classList.add('visible'));
   }
 
   // ========================================
@@ -131,26 +118,58 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (entry.isIntersecting) {
             const currentId = entry.target.getAttribute('id');
             navLinksDesktop.forEach((link) => {
-              link.classList.toggle(
-                'active',
-                link.getAttribute('href') === `#${currentId}`
-              );
+              link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
             });
           }
-          // ========================================
-  // 10. Dynamic Rendering from Firebase
+        });
+      },
+      { threshold: 0.2, rootMargin: `-${NAVBAR_HEIGHT}px 0px -40% 0px` }
+    );
+    sections.forEach((section) => navObserver.observe(section));
+  }
+
+  // ========================================
+  // 6. Year in Footer & Happy Hour
+  // ========================================
+  const yearEl = document.getElementById('current-year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const happyHourStatus = document.querySelector('.happy-hour-status');
+  const updateHappyHour = () => {
+    if (!happyHourStatus) return;
+    const hour = new Date().getHours();
+    if (hour < 20) {
+      happyHourStatus.textContent = 'ACTIVO 🍺';
+      happyHourStatus.style.color = '#000';
+      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.15)';
+      happyHourStatus.style.padding = '4px 14px';
+      happyHourStatus.style.borderRadius = '999px';
+      happyHourStatus.style.fontFamily = "'Caveat', cursive";
+      happyHourStatus.style.fontSize = '1rem';
+    } else {
+      happyHourStatus.textContent = '¡La birra sigue! 🍻';
+      happyHourStatus.style.color = 'rgba(0,0,0,0.7)';
+      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.1)';
+      happyHourStatus.style.padding = '4px 14px';
+      happyHourStatus.style.borderRadius = '999px';
+      happyHourStatus.style.fontFamily = "'Caveat', cursive";
+      happyHourStatus.style.fontSize = '1rem';
+    }
+  };
+  updateHappyHour();
+  setInterval(updateHappyHour, 60000);
+
+  // ========================================
+  // 7. Dynamic Rendering from Firebase
   // ========================================
   async function loadMenu() {
     try {
       const querySnapshot = await getDocs(collection(db, "products"));
       const products = [];
       querySnapshot.forEach(doc => {
-        if(doc.data().active) {
-            products.push({ id: doc.id, ...doc.data() });
-        }
+        if(doc.data().active) products.push({ id: doc.id, ...doc.data() });
       });
       
-      // Sort
       products.sort((a, b) => (a.order || 99) - (b.order || 99));
 
       const containers = {
@@ -163,10 +182,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         tragos: document.getElementById('tragos-list')
       };
 
-      // Limpiar contenedores
       Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
 
-      // Agrupar burgers y star
+      const getEmoji = (name) => {
+          const map = {
+              "Tequeños (8 u.)": "🧀", "Nachos Cargados": "🌮", "Empanadas Salteñas": "🥟", "Empanadas J&Q": "🥟",
+              "Papas Solas": "🍟", "Papas Cheddar": "🧀", "Papas Completas": "🤤",
+              "Muzzarella": "🍕", "Napolitana": "🍅", "Panceta & Verdeo": "🥓"
+          };
+          return map[name] || "🍽️";
+      };
+
+      const renderCardWithEmoji = (p) => `
+          <div class="card fade-in">
+            <div class="card-img" style="display: flex; justify-content: center; align-items: center; background: var(--bg-tertiary); height: 140px; font-size: 3rem; border-bottom: 1px solid rgba(255,140,0,0.1);">
+              ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">` : getEmoji(p.name)}
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">${p.name}</h3>
+              <p class="card-desc">${p.desc}</p>
+              <span class="card-price">$${p.price}</span>
+            </div>
+          </div>
+      `;
+
+      // Entradas
+      products.filter(p => p.cat === 'entradas').forEach(p => {
+          if(containers.entradas) containers.entradas.innerHTML += renderCardWithEmoji(p);
+      });
+
+      // Burgas
       const burgersContainer = containers.burgas;
       if (burgersContainer) {
           const starBurgers = products.filter(p => p.cat === 'burgas' && p.isStar);
@@ -207,21 +252,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
       }
 
-      // Entradas
-      products.filter(p => p.cat === 'entradas').forEach(p => {
-          if(containers.entradas) {
-              containers.entradas.innerHTML += `
-                  <div class="card fade-in">
-                    <div class="card-body">
-                      <h3 class="card-title">${p.name}</h3>
-                      <p class="card-desc">${p.desc}</p>
-                      <span class="card-price">$${p.price}</span>
-                    </div>
-                  </div>
-              `;
-          }
-      });
-
       // Combos
       products.filter(p => p.cat === 'combos').forEach(p => {
           if(containers.combos) {
@@ -234,59 +264,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
       });
 
-      // Papas
+      // Papas & Pizzas
       products.filter(p => p.cat === 'papas').forEach(p => {
-          if(containers.papas) {
-              containers.papas.innerHTML += `
-                  <div class="card fade-in">
-                    <div class="card-body">
-                      <div class="card-row">
-                        <div>
-                          <h3 class="card-title">${p.name}</h3>
-                          <p class="card-desc">${p.desc}</p>
-                        </div>
-                        <span class="card-price">$${p.price}</span>
-                      </div>
-                    </div>
-                  </div>
-              `;
-          }
+          if(containers.papas) containers.papas.innerHTML += renderCardWithEmoji(p);
       });
-
-      // Pizzas
       products.filter(p => p.cat === 'pizzas').forEach(p => {
-          if(containers.pizzas) {
-              containers.pizzas.innerHTML += `
-                  <div class="pizza-card fade-in">
-                    <div class="card-row">
-                      <div>
-                        <h3 class="card-title">${p.name}</h3>
-                        <p class="card-desc">${p.desc}</p>
-                      </div>
-                      <span class="card-price">$${p.price}</span>
-                    </div>
-                  </div>
-              `;
-          }
+          if(containers.pizzas) containers.pizzas.innerHTML += renderCardWithEmoji(p);
       });
 
-      // Cervezas
+      // Cervezas & Tragos
       products.filter(p => p.cat === 'cervezas').forEach(p => {
           if(containers.cervezas) {
               containers.cervezas.innerHTML += `
-                  <div class="beer-pill">
+                  <div class="beer-pill fade-in">
                     <span class="beer-name">${p.name}</span>
                     <span class="beer-desc">${p.desc}</span>
                   </div>
               `;
           }
       });
-
-      // Tragos
       products.filter(p => p.cat === 'tragos').forEach(p => {
           if(containers.tragos) {
               containers.tragos.innerHTML += `
-                  <div class="trago-item">
+                  <div class="trago-item fade-in">
                     <span class="trago-name">${p.name}</span>
                     <span class="trago-price">$${p.price}</span>
                   </div>
@@ -294,65 +294,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
       });
 
-      // Re-trigger scroll observer for new items
-      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+      // Re-apply fade-in observers to new elements
+      if (revealObserver) {
+        document.querySelectorAll('.fade-in').forEach(el => revealObserver.observe(el));
+      } else {
+        document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+      }
     } catch (e) {
       console.error("Error loading menu:", e);
     }
   }
 
-  // Cargar datos al iniciar
   await loadMenu();
-
-});
-      },
-      { threshold: 0.2, rootMargin: `-${NAVBAR_HEIGHT}px 0px -40% 0px` }
-    );
-
-    sections.forEach((section) => navObserver.observe(section));
-  }
-
-  // ========================================
-  // 6. Year in Footer
-  // ========================================
-  const yearEl = document.getElementById('current-year');
-  if (yearEl) {
-    yearEl.textContent = new Date().getFullYear();
-  }
-
-  // ========================================
-  // 7. Happy Hour Dynamic Badge
-  // ========================================
-  const happyHourStatus = document.querySelector('.happy-hour-status');
-
-  const updateHappyHour = () => {
-    if (!happyHourStatus) return;
-    const hour = new Date().getHours();
-
-    if (hour < 20) {
-      happyHourStatus.textContent = 'ACTIVO';
-      happyHourStatus.style.color = '#000';
-      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.15)';
-      happyHourStatus.style.padding = '4px 14px';
-      happyHourStatus.style.borderRadius = '999px';
-      happyHourStatus.style.fontFamily = "'Caveat', cursive";
-      happyHourStatus.style.fontSize = '1rem';
-    } else {
-      happyHourStatus.textContent = 'Terminó — la birra sigue';
-      happyHourStatus.style.color = 'rgba(0,0,0,0.7)';
-      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.1)';
-      happyHourStatus.style.padding = '4px 14px';
-      happyHourStatus.style.borderRadius = '999px';
-      happyHourStatus.style.fontFamily = "'Caveat', cursive";
-      happyHourStatus.style.fontSize = '1rem';
-    }
-  };
-
-  updateHappyHour();
-  setInterval(updateHappyHour, 60000);
-
-  // ========================================
-  // Initial scroll check (in case page loads scrolled)
-  // ========================================
   onScroll();
 });
