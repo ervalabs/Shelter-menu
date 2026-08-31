@@ -1,0 +1,358 @@
+'use strict';
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA_42fCrT7k3e3_0XcB2QrYejYJMVztqjo",
+    authDomain: "shelter-menu.firebaseapp.com",
+    projectId: "shelter-menu",
+    storageBucket: "shelter-menu.firebasestorage.app",
+    messagingSenderId: "645160363953",
+    appId: "1:645160363953:web:63b4d25b6128b5badb3f90"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+  // ========================================
+  // 1. Navbar Scroll Effect
+  // ========================================
+  const navbar = document.getElementById('navbar');
+  let ticking = false;
+
+  const onScroll = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (navbar) {
+          navbar.classList.toggle('scrolled', window.scrollY > 50);
+        }
+
+        // 7. Scroll Indicator Hide
+        if (scrollIndicator) {
+          const hidden = window.scrollY > 200;
+          scrollIndicator.style.opacity = hidden ? '0' : '1';
+          scrollIndicator.style.pointerEvents = hidden ? 'none' : 'auto';
+        }
+
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // ========================================
+  // 2. Smooth Scroll for Anchor Links
+  // ========================================
+  const NAVBAR_HEIGHT = 70;
+
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+
+    const targetId = link.getAttribute('href');
+    if (targetId === '#') return;
+
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+      e.preventDefault();
+      const top = targetElement.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT;
+      window.scrollTo({ top, behavior: 'smooth' });
+
+      // Close mobile menu if open
+      closeMobileMenu();
+    }
+  });
+
+  // ========================================
+  // 3. Mobile Menu Toggle
+  // ========================================
+  const hamburger = document.querySelector('.hamburger');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const menuOverlay = document.querySelector('.menu-overlay');
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+
+  const closeMobileMenu = () => {
+    hamburger?.classList.remove('active');
+    mobileMenu?.classList.remove('active');
+    menuOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  const toggleMobileMenu = () => {
+    hamburger?.classList.toggle('active');
+    mobileMenu?.classList.toggle('active');
+    menuOverlay?.classList.toggle('active');
+    document.body.style.overflow =
+      mobileMenu?.classList.contains('active') ? 'hidden' : '';
+  };
+
+  hamburger?.addEventListener('click', toggleMobileMenu);
+  menuOverlay?.addEventListener('click', closeMobileMenu);
+
+  // ========================================
+  // 4. Scroll Reveal Animations
+  // ========================================
+  const fadeElements = document.querySelectorAll('.fade-in');
+
+  if (fadeElements.length > 0 && 'IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    fadeElements.forEach((el) => revealObserver.observe(el));
+  } else {
+    // Fallback: just show everything
+    fadeElements.forEach((el) => el.classList.add('visible'));
+  }
+
+  // ========================================
+  // 5. Active Nav Link Highlight
+  // ========================================
+  const sections = document.querySelectorAll('section[id]');
+  const navLinksDesktop = document.querySelectorAll('.nav-links a');
+
+  if (sections.length > 0 && navLinksDesktop.length > 0 && 'IntersectionObserver' in window) {
+    const navObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const currentId = entry.target.getAttribute('id');
+            navLinksDesktop.forEach((link) => {
+              link.classList.toggle(
+                'active',
+                link.getAttribute('href') === `#${currentId}`
+              );
+            });
+          }
+          // ========================================
+  // 10. Dynamic Rendering from Firebase
+  // ========================================
+  async function loadMenu() {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const products = [];
+      querySnapshot.forEach(doc => {
+        if(doc.data().active) {
+            products.push({ id: doc.id, ...doc.data() });
+        }
+      });
+      
+      // Sort
+      products.sort((a, b) => (a.order || 99) - (b.order || 99));
+
+      const containers = {
+        entradas: document.getElementById('entradas-grid'),
+        burgas: document.getElementById('burgas-container'),
+        combos: document.getElementById('combos-grid'),
+        papas: document.getElementById('papas-grid'),
+        pizzas: document.getElementById('pizzas-grid'),
+        cervezas: document.getElementById('cervezas-grid'),
+        tragos: document.getElementById('tragos-list')
+      };
+
+      // Limpiar contenedores
+      Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
+
+      // Agrupar burgers y star
+      const burgersContainer = containers.burgas;
+      if (burgersContainer) {
+          const starBurgers = products.filter(p => p.cat === 'burgas' && p.isStar);
+          const normalBurgers = products.filter(p => p.cat === 'burgas' && !p.isStar);
+          
+          starBurgers.forEach(p => {
+              burgersContainer.innerHTML += `
+                <div class="star-card fade-in">
+                  <span class="star-badge">La Más Pedida</span>
+                  <div class="card-img">
+                    <img src="${p.img || 'img/hero-burger.png'}" alt="${p.name}" loading="lazy">
+                  </div>
+                  <div class="card-body">
+                    <h3 class="card-title">${p.name}</h3>
+                    <p class="card-desc">${p.desc}</p>
+                    <span class="card-price">$${p.price}</span>
+                  </div>
+                </div>
+              `;
+          });
+          
+          if (normalBurgers.length > 0) {
+              let gridHtml = '<div class="burger-grid">';
+              normalBurgers.forEach(p => {
+                  gridHtml += `
+                    <div class="burger-card fade-in">
+                      <img class="card-img" src="${p.img || 'img/hero-burger.png'}" alt="${p.name}" loading="lazy">
+                      <div class="card-body">
+                        <h3 class="card-title">${p.name}</h3>
+                        <p class="card-desc">${p.desc}</p>
+                        <span class="card-price">$${p.price}</span>
+                      </div>
+                    </div>
+                  `;
+              });
+              gridHtml += '</div>';
+              burgersContainer.innerHTML += gridHtml;
+          }
+      }
+
+      // Entradas
+      products.filter(p => p.cat === 'entradas').forEach(p => {
+          if(containers.entradas) {
+              containers.entradas.innerHTML += `
+                  <div class="card fade-in">
+                    <div class="card-body">
+                      <h3 class="card-title">${p.name}</h3>
+                      <p class="card-desc">${p.desc}</p>
+                      <span class="card-price">$${p.price}</span>
+                    </div>
+                  </div>
+              `;
+          }
+      });
+
+      // Combos
+      products.filter(p => p.cat === 'combos').forEach(p => {
+          if(containers.combos) {
+              containers.combos.innerHTML += `
+                  <div class="combo-item">
+                    <span class="combo-item-name">${p.name}</span>
+                    <span class="combo-item-price">+$${p.price}</span>
+                  </div>
+              `;
+          }
+      });
+
+      // Papas
+      products.filter(p => p.cat === 'papas').forEach(p => {
+          if(containers.papas) {
+              containers.papas.innerHTML += `
+                  <div class="card fade-in">
+                    <div class="card-body">
+                      <div class="card-row">
+                        <div>
+                          <h3 class="card-title">${p.name}</h3>
+                          <p class="card-desc">${p.desc}</p>
+                        </div>
+                        <span class="card-price">$${p.price}</span>
+                      </div>
+                    </div>
+                  </div>
+              `;
+          }
+      });
+
+      // Pizzas
+      products.filter(p => p.cat === 'pizzas').forEach(p => {
+          if(containers.pizzas) {
+              containers.pizzas.innerHTML += `
+                  <div class="pizza-card fade-in">
+                    <div class="card-row">
+                      <div>
+                        <h3 class="card-title">${p.name}</h3>
+                        <p class="card-desc">${p.desc}</p>
+                      </div>
+                      <span class="card-price">$${p.price}</span>
+                    </div>
+                  </div>
+              `;
+          }
+      });
+
+      // Cervezas
+      products.filter(p => p.cat === 'cervezas').forEach(p => {
+          if(containers.cervezas) {
+              containers.cervezas.innerHTML += `
+                  <div class="beer-pill">
+                    <span class="beer-name">${p.name}</span>
+                    <span class="beer-desc">${p.desc}</span>
+                  </div>
+              `;
+          }
+      });
+
+      // Tragos
+      products.filter(p => p.cat === 'tragos').forEach(p => {
+          if(containers.tragos) {
+              containers.tragos.innerHTML += `
+                  <div class="trago-item">
+                    <span class="trago-name">${p.name}</span>
+                    <span class="trago-price">$${p.price}</span>
+                  </div>
+              `;
+          }
+      });
+
+      // Re-trigger scroll observer for new items
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    } catch (e) {
+      console.error("Error loading menu:", e);
+    }
+  }
+
+  // Cargar datos al iniciar
+  await loadMenu();
+
+});
+      },
+      { threshold: 0.2, rootMargin: `-${NAVBAR_HEIGHT}px 0px -40% 0px` }
+    );
+
+    sections.forEach((section) => navObserver.observe(section));
+  }
+
+  // ========================================
+  // 6. Year in Footer
+  // ========================================
+  const yearEl = document.getElementById('current-year');
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
+
+  // ========================================
+  // 7. Happy Hour Dynamic Badge
+  // ========================================
+  const happyHourStatus = document.querySelector('.happy-hour-status');
+
+  const updateHappyHour = () => {
+    if (!happyHourStatus) return;
+    const hour = new Date().getHours();
+
+    if (hour < 20) {
+      happyHourStatus.textContent = 'ACTIVO';
+      happyHourStatus.style.color = '#000';
+      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.15)';
+      happyHourStatus.style.padding = '4px 14px';
+      happyHourStatus.style.borderRadius = '999px';
+      happyHourStatus.style.fontFamily = "'Caveat', cursive";
+      happyHourStatus.style.fontSize = '1rem';
+    } else {
+      happyHourStatus.textContent = 'Terminó — la birra sigue';
+      happyHourStatus.style.color = 'rgba(0,0,0,0.7)';
+      happyHourStatus.style.backgroundColor = 'rgba(0,0,0,0.1)';
+      happyHourStatus.style.padding = '4px 14px';
+      happyHourStatus.style.borderRadius = '999px';
+      happyHourStatus.style.fontFamily = "'Caveat', cursive";
+      happyHourStatus.style.fontSize = '1rem';
+    }
+  };
+
+  updateHappyHour();
+  setInterval(updateHappyHour, 60000);
+
+  // ========================================
+  // Initial scroll check (in case page loads scrolled)
+  // ========================================
+  onScroll();
+});

@@ -1,0 +1,169 @@
+:root {
+  --bg-dark: #0A0A0A;
+  --bg-panel: #1A1A1A;
+  --bg-card: #2A2A2A;
+  --accent: #FF8C00;
+  --text-main: #F5F5F5;
+  --text-muted: #B0B0B0;
+  --border: #333333;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+}
+
+/* LOGIN SCREEN */
+#login-screen {
+  display: none;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+#login-screen.active { display: flex; }
+
+.login-box {
+  background-color: var(--bg-panel);
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.login-box h2 {
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.login-box p { color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem; }
+
+form { display: flex; flex-direction: column; gap: 16px; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-family: inherit;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+button {
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+button[type="submit"], .btn-primary {
+  background-color: var(--accent);
+  color: #000;
+}
+button[type="submit"]:hover, .btn-primary:hover {
+  background-color: #ff9d2e;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+.btn-outline:hover { background: var(--bg-card); }
+.btn-danger { background: transparent; color: var(--danger); }
+.btn-danger:hover { color: #f87171; }
+
+.error { color: var(--danger); font-size: 0.85rem; }
+
+/* DASHBOARD */
+#dashboard { display: none; }
+#dashboard.active { display: block; }
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+}
+.admin-header h1 { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+.admin-header span { color: var(--text-muted); font-weight: 400; }
+
+.admin-main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.table-container {
+  background-color: var(--bg-panel);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 16px; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
+tbody tr:hover { background-color: rgba(255,255,255,0.02); }
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.status-active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.status-inactive { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+.actions { display: flex; gap: 8px; }
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: var(--bg-panel);
+  padding: 32px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid var(--border);
+}
+.modal-content h2 { margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-muted); }
+.form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.form-row .form-group { flex: 1; margin-bottom: 0; }
+
+.checkbox-row { align-items: center; }
+.switch-label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.switch-label input { width: auto; }
+
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px;
+}
